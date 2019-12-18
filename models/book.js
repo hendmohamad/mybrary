@@ -1,6 +1,5 @@
 const mangoose = require('mongoose');
-const path = require('path');
-const coverImageBasePath = 'uploads/bookCovers';
+
 const bookSchema = new mangoose.Schema({
     title: {
         type: String,
@@ -22,8 +21,12 @@ const bookSchema = new mangoose.Schema({
         required: true,
         default: Date.now
     },
-    coverImageName: {
-        type: String,
+    coverImage: {
+        type: Buffer,
+        required: true
+    },
+    coverImageType:{
+        type:String,
         required: true
     },
     author: {
@@ -34,10 +37,9 @@ const bookSchema = new mangoose.Schema({
 });
 
 bookSchema.virtual('coverImagePath').get(function(){
-    if(this.coverImageName != null){
-      return  path.join('/', coverImageBasePath, this.coverImageName );
+    if(this.coverImage != null && this.coverImageType!=null){
+      return `data:${this.coverImageType};charset=utf-8;base64,${this.coverImage.toString('base64')}`;
     }
 });
 
 module.exports = mangoose.model('Book', bookSchema);
-module.exports.coverImageBasePath= coverImageBasePath;
